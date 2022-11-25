@@ -11,7 +11,7 @@ namespace OrderForm
 
     public partial class Form1 : Form
     {
-        public ProductServiceImpl productService = new();
+        public ProductServiceMock productService = new();
         public List<Product> listProduits = new();
         public List<string> listCat = new();
         public double totalOrder = 0;
@@ -121,7 +121,14 @@ namespace OrderForm
 
         private void BindDatagrid()
         {
-            dataGridOrder.DataSource = currentOrder.GetAllProducts();
+
+            Order ob = new Order();
+            foreach(Product p in   currentOrder.GetAllProducts())
+            {
+                ob.AddProductToOrder(p);
+            }
+
+            dataGridOrder.DataSource = ob.GetAllProducts();
             dataGridOrder.Columns["id"].Visible = false;
         }
         private void BtnPaiement_Click(object sender, EventArgs e)
