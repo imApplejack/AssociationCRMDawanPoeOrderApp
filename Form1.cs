@@ -11,32 +11,63 @@ namespace OrderForm
 
     public partial class Form1 : Form
     {
-        public ProductServiceImpl productService =new();
+        public ProductServiceImpl productService = new();
         public List<Product> listProduits = new();
         public List<string> listCat = new();
         public double totalOrder = 0;
+
+        //Creation d'une commande vide
+        public Order currentOrder = new() { MenuState = OrderState.Payed };
+        public int orderNumber = 0;
+
+
+        public List<Order> sessionOrders = new();
         public Form1()
         {
             InitializeComponent();
+            listProduits = productService.getAllProduct();
+            listCat = productService.GetAllCategory();
         }
         private void Form1_Load(object sender, EventArgs e)
         {
             // Demander un ID d'order
             // Creer une order
+            Bindall();
 
-            //listCat = productService.GetAllCategory();
-            listProduits = productService.getAllProduct();
-                                
-            
+            textBoxOrderName.Text = $"{currentOrder.OrderName}";
+
+
+
+        }
+
+        private void Bindall()
+        {
+            // Ouverture d'une nouvelle commande lors du chargement/rechargement de la fenêtre
+            //dataGridOrder.DataSource = currentOrder;
+
+
+            if (currentOrder.MenuState == OrderState.Payed)
+            {
+                orderNumber += 1;
+                currentOrder = NewOrder();
+            }
+
+
+            //Mise à jour de la listBox des categories
             foreach (string item in listCat)
             {
                 ListCategory.Items.Add(item);
             }
 
-
-
-
         }
+        public Order NewOrder()
+        {
+            Order order = new Order();
+            order.OrderName = $"CMD #{orderNumber.ToString()}";
+            order.MenuState = OrderState.Pending;
+            return order;
+        }
+
         private void ListCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
             ListProduit.Items.Clear();
@@ -47,6 +78,7 @@ namespace OrderForm
                     if (item.ProductCategory.ToString() == ListCategory.SelectedItem.ToString())
                     {
                         ListProduit.Items.Add(item.Name);
+
                     }
                 }
             }
@@ -61,17 +93,55 @@ namespace OrderForm
                 //LOrsqu'on clique sur un produit de la liste, il s'affiche dans la listOrder
                 listOrder.Items.Add($"{pdt.Name}        {pdt.Price}");
 
-                //Chercher dans la table order en cours la somme des prix
-                totalOrder += pdt.Price;
-                
-                
-                
+                //<->
+                currentOrder.AddProductToOrder(pdt);
+                //listOrder.Items.Clear();
+                //listOrder.Items.Add(pdt);
 
+                //Chercher dans la table order en cours la somme des prix
+                totalOrder = 0;
+                foreach (Product item in currentOrder.Products)
+                {
+                    double i = item.Price;
+                    totalOrder += i;
+                }
+                //totalOrder += pdt.Price;
+                Order test = currentOrder;
+                //dataGridOrder.DataSource = currentOrder;
+                //dataGridOrder.DataSource = currentOrder.GetAllProducts();
+                textBoxTotal.Text = totalOrder.ToString();
+                /*dataGridOrder.SelectionMode = DataGridViewSelectionMode.FullRowSelect;dataGridOrder.DataSource = currentOrder.GetAllProducts();
+                dataGridOrder.Columns["id"].Visible= false;
+                dataGridOrder.SelectionMode = DataGridViewSelectionMode.FullRowSelect;*/
+                //BindDatagrid();
+                ListProduit.SelectedItem = 0;
             }
+        }
+
+
+        private void BindDatagrid()
+        {
+            dataGridOrder.DataSource = currentOrder.GetAllProducts();
+            dataGridOrder.Columns["id"].Visible = false;
+        }
+        private void BtnPaiement_Click(object sender, EventArgs e)
+        {
+            /*int i = dataGridOrder.DisplayedRowCount(true);
+            int j = dataGridOrder.DisplayedColumnCount(true);
+
+            textBoxlignesvues.Text = i.ToString();
+            textBoxlignescachees.Text = j.ToString();
+            dataGridOrder.DataSource = currentOrder.GetAllProducts();
+            dataGridOrder.Columns["id"].Visible= false;*/
+            BindDatagrid();
         }
 
         //Bouton payer:
         //Appeler la fenêtre moyens de paiement
+
+
+
+
 
 
     }
