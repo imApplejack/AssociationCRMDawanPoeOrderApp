@@ -122,7 +122,14 @@ namespace OrderForm
 
         private void BindDatagrid()
         {
-            dataGridOrder.DataSource = currentOrder.GetAllProducts();
+
+            Order ob = new Order();
+            foreach(Product p in   currentOrder.GetAllProducts())
+            {
+                ob.AddProductToOrder(p);
+            }
+
+            dataGridOrder.DataSource = ob.GetAllProducts();
             dataGridOrder.Columns["id"].Visible = false;
             dataGridOrder.ReadOnly = true;
             dataGridOrder.Columns["Name"].AutoSizeMode=DataGridViewAutoSizeColumnMode.Fill;
