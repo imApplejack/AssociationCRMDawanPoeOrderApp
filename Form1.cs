@@ -11,7 +11,7 @@ namespace OrderForm
 
     public partial class Form1 : Form
     {
-        public ProductServiceImpl productService = new();
+        public ProductServiceMock productService = new();
         public List<Product> listProduits = new();
         public List<string> listCat = new();
         public double totalOrder = 0;
@@ -27,6 +27,7 @@ namespace OrderForm
             InitializeComponent();
             listProduits = productService.getAllProduct();
             listCat = productService.GetAllCategory();
+            BindDatagrid();
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -123,6 +124,16 @@ namespace OrderForm
         {
             dataGridOrder.DataSource = currentOrder.GetAllProducts();
             dataGridOrder.Columns["id"].Visible = false;
+            dataGridOrder.ReadOnly = true;
+            dataGridOrder.Columns["Name"].AutoSizeMode=DataGridViewAutoSizeColumnMode.Fill;
+            dataGridOrder.Columns["Name"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridOrder.Columns["Name"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridOrder.Columns["Price"].AutoSizeMode=DataGridViewAutoSizeColumnMode.Fill;
+            dataGridOrder.Columns["Price"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dataGridOrder.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            dataGridOrder.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
         }
         private void BtnPaiement_Click(object sender, EventArgs e)
         {
@@ -138,11 +149,6 @@ namespace OrderForm
 
         //Bouton payer:
         //Appeler la fenêtre moyens de paiement
-
-
-
-
-
 
     }
 }
